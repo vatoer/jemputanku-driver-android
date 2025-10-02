@@ -16,6 +16,8 @@ import id.stargan.jemputankudriver.core.data.OnboardingPreferences
 import id.stargan.jemputankudriver.driver.ui.main.MainScreen
 import id.stargan.jemputankudriver.feature.active_trip.ActiveTripScreen
 import id.stargan.jemputankudriver.feature.onboarding.OnboardingScreen
+import id.stargan.jemputankudriver.feature.login.LoginScreen
+import id.stargan.jemputankudriver.feature.signup.SignupScreen
 import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.launch
 
@@ -24,6 +26,8 @@ object AppRoutes {
     const val MAIN_SCREEN = "main"
     const val ACTIVE_TRIP_SCREEN = "active_trip"
     const val ONBOARDING_SCREEN = "onboarding"
+    const val LOGIN_SCREEN = "login"
+    const val SIGNUP_SCREEN = "signup"
 }
 
 @Composable
@@ -36,7 +40,7 @@ fun AppNavigation() {
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(isOnboardingShown) {
-        startDestination = if (isOnboardingShown) AppRoutes.MAIN_SCREEN else AppRoutes.ONBOARDING_SCREEN
+        startDestination = if (isOnboardingShown) AppRoutes.LOGIN_SCREEN else AppRoutes.ONBOARDING_SCREEN
     }
 
     if (startDestination != null) {
@@ -46,7 +50,7 @@ fun AppNavigation() {
                     onFinish = {
                         scope.launch {
                             OnboardingPreferences.setOnboardingShown(context, true)
-                            navController.navigate(AppRoutes.MAIN_SCREEN) {
+                            navController.navigate(AppRoutes.LOGIN_SCREEN) {
                                 popUpTo(AppRoutes.ONBOARDING_SCREEN) { inclusive = true }
                             }
                         }
@@ -55,6 +59,38 @@ fun AppNavigation() {
                         scope.launch {
                             OnboardingPreferences.clear(context)
                         }
+                    }
+                )
+            }
+            composable(route = AppRoutes.LOGIN_SCREEN) {
+                LoginScreen(
+                    onLoginSuccess = {
+                        navController.navigate(AppRoutes.MAIN_SCREEN) {
+                            popUpTo(AppRoutes.LOGIN_SCREEN) { inclusive = true }
+                        }
+                    },
+                    onGoogleLogin = {
+                        // TODO: Integrasi Google Sign-In
+                    },
+                    onNavigateToSignup = {
+                        navController.navigate(AppRoutes.SIGNUP_SCREEN) {
+                            launchSingleTop = true
+                        }
+                    }
+                )
+            }
+            composable(route = AppRoutes.SIGNUP_SCREEN) {
+                SignupScreen(
+                    onSignupSuccess = {
+                        navController.navigate(AppRoutes.MAIN_SCREEN) {
+                            popUpTo(AppRoutes.SIGNUP_SCREEN) { inclusive = true }
+                        }
+                    },
+                    onGoogleSignup = {
+                        // TODO: Integrasi Google Sign-Up
+                    },
+                    onNavigateToLogin = {
+                        navController.popBackStack(AppRoutes.LOGIN_SCREEN, inclusive = false)
                     }
                 )
             }

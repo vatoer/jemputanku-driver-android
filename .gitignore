@@ -1,5 +1,6 @@
 *.iml
 .gradle
+.idea/*
 /local.properties
 /.idea/caches
 /.idea/libraries
@@ -13,3 +14,28 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+**/google-services.json
+
+# Ignore Copilot and Gemini config/data files
+*copilot*
+*gemini*
+*Copilot*
+*Gemini*
+**/copilot*/
+**/gemini*/
+**/Copilot*/
+**/Gemini*/
+# Common config/data file patterns
+**/copilot*.json
+**/gemini*.json
+**/copilot*.yaml
+**/gemini*.yaml
+**/copilot*.yml
+**/gemini*.yml
+**/copilot*.env
+**/gemini*.env
+**/copilot*/data/
+**/gemini*/data/
+**/copilot*/config/
+**/gemini*/config/
