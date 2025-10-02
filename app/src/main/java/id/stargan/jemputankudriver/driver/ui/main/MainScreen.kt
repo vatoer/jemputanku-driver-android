@@ -23,6 +23,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import id.stargan.jemputankudriver.R // Ganti dengan package R aplikasi Anda untuk icon
+import id.stargan.jemputankudriver.feature.account.AccountScreen
+import id.stargan.jemputankudriver.feature.home.HomeScreen
+import id.stargan.jemputankudriver.feature.schedule.ScheduleScreen
 
 // Enum untuk merepresentasikan setiap item navigasi
 enum class MainNavigationItem(
@@ -76,9 +79,9 @@ fun MainScreen() {
         // Box ini akan berisi konten dari layar yang aktif
         Box(modifier = Modifier.padding(innerPadding)) {
             when (selectedItem) {
-                MainNavigationItem.HOME -> HomeScreenContent()
-                MainNavigationItem.SCHEDULE -> ScheduleScreenContent()
-                MainNavigationItem.ACCOUNT -> AccountScreenContent()
+                MainNavigationItem.HOME -> HomeScreen()
+                MainNavigationItem.SCHEDULE -> ScheduleScreen()
+                MainNavigationItem.ACCOUNT -> AccountScreen()
             }
         }
     }
@@ -105,42 +108,6 @@ fun MainBottomNavigationBar(
                 alwaysShowLabel = true // Bisa diubah menjadi false jika hanya ingin ikon
             )
         }
-    }
-}
-
-
-// --- Placeholder untuk Konten Setiap Layar (Sama seperti sebelumnya) ---
-
-@Composable
-fun HomeScreenContent() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(text = "Konten Halaman Beranda", style = MaterialTheme.typography.headlineMedium)
-        // TODO: Implementasikan UI Beranda di sini
-    }
-}
-
-@Composable
-fun ScheduleScreenContent() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(text = "Konten Halaman Jadwal", style = MaterialTheme.typography.headlineMedium)
-        // TODO: Implementasikan UI Jadwal di sini
-    }
-}
-
-@Composable
-fun AccountScreenContent() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(text = "Konten Halaman Akun", style = MaterialTheme.typography.headlineMedium)
-        // TODO: Implementasikan UI Akun di sini
     }
 }
 
