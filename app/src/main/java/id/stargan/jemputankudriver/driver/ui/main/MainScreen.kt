@@ -23,9 +23,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import id.stargan.jemputankudriver.R // Ganti dengan package R aplikasi Anda untuk icon
+import id.stargan.jemputankudriver.driver.navigation.AppRoutes
 import id.stargan.jemputankudriver.feature.account.AccountScreen
 import id.stargan.jemputankudriver.feature.home.HomeScreen
 import id.stargan.jemputankudriver.feature.schedule.ScheduleScreen
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 
 // Enum untuk merepresentasikan setiap item navigasi
 enum class MainNavigationItem(
@@ -48,7 +51,7 @@ enum class MainNavigationItem(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen() {
+fun MainScreen(navController: NavController, modifier: Modifier = Modifier) {
     // Daftar item navigasi yang akan kita gunakan
     val navigationItems = MainNavigationItem.values().toList()
 
@@ -74,12 +77,17 @@ fun MainScreen() {
                 selectedItem = selectedItem,
                 onItemSelected = { selectedItem = it }
             )
-        }
+        },
+        modifier = modifier
     ) { innerPadding ->
         // Box ini akan berisi konten dari layar yang aktif
         Box(modifier = Modifier.padding(innerPadding)) {
             when (selectedItem) {
-                MainNavigationItem.HOME -> HomeScreen()
+                MainNavigationItem.HOME -> HomeScreen(onStartTripClick = {
+                    navController.navigate(AppRoutes.ACTIVE_TRIP_SCREEN)
+                },
+                    onLihatTripClick = {navController.navigate(AppRoutes.ACTIVE_TRIP_SCREEN)}
+                )
                 MainNavigationItem.SCHEDULE -> ScheduleScreen()
                 MainNavigationItem.ACCOUNT -> AccountScreen()
             }
@@ -114,7 +122,7 @@ fun MainBottomNavigationBar(
 @Preview(showBackground = true)
 @Composable
 fun MainScreenPreview() {
-    // Anda perlu tema Compose untuk preview
-    // Misalnya: YourAppTheme { MainScreen() }
-    MainScreen()
+    MaterialTheme {
+        MainScreen(navController = rememberNavController())
+    }
 }
