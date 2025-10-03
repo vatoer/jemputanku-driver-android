@@ -34,6 +34,36 @@ class AuthViewModel(
         }
     }
 
+    fun signInWithEmail(email: String, password: String) {
+        _isLoading.value = true
+        _errorMessage.value = null
+        _loginSuccess.value = false
+        viewModelScope.launch {
+            val result = authRepository.signInWithEmail(email, password)
+            _isLoading.value = false
+            if (result.isSuccess) {
+                _loginSuccess.value = true
+            } else {
+                _errorMessage.value = result.exceptionOrNull()?.localizedMessage
+            }
+        }
+    }
+
+    fun signUpWithEmail(name: String, email: String, password: String) {
+        _isLoading.value = true
+        _errorMessage.value = null
+        _loginSuccess.value = false
+        viewModelScope.launch {
+            val result = authRepository.signupWithEmail(name, email, password)
+            _isLoading.value = false
+            if (result.isSuccess) {
+                _loginSuccess.value = true
+            } else {
+                _errorMessage.value = result.exceptionOrNull()?.localizedMessage
+            }
+        }
+    }
+
     fun resetState() {
         _isLoading.value = false
         _errorMessage.value = null
@@ -43,4 +73,3 @@ class AuthViewModel(
     fun isLoggedIn(): Boolean = authRepository.isLoggedIn()
     fun signOut() = authRepository.signOut()
 }
-

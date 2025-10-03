@@ -82,7 +82,7 @@ fun SignupScreen(
             )
             Spacer(modifier = Modifier.height(24.dp))
             Button(
-                onClick = { /* Call your email/password signup here if needed */ },
+                onClick = { authViewModel.signUpWithEmail(name, email, password) },
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !isLoadingState && name.isNotBlank() && email.isNotBlank() && password.isNotBlank()
             ) {

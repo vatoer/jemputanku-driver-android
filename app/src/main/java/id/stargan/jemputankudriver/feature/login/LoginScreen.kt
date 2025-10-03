@@ -72,7 +72,7 @@ fun LoginScreen(
             )
             Spacer(modifier = Modifier.height(24.dp))
             Button(
-                onClick = { /* Call your email/password login here if needed */ },
+                onClick = { authViewModel.signInWithEmail(email, password) },
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !isLoadingState && email.isNotBlank() && password.isNotBlank()
             ) {
