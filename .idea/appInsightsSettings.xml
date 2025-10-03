@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="id.stargan.jemputankudriver" />
+                  <option name="mobileSdkAppId" value="1:327963437463:android:3cfbe19b518b81e52d7cd2" />
+                  <option name="projectId" value="jemputanku-f7384" />
+                  <option name="projectNumber" value="327963437463" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

@@ -49,6 +49,15 @@ enum class MainNavigationItem(
     )
 }
 
+fun handleLogout(navController: NavController) {
+    // TODO: Implementasi logout, misal clear session, hapus token, dsb
+    // Navigasi ke login screen setelah logout
+    navController.navigate(AppRoutes.LOGIN_SCREEN) {
+        popUpTo(AppRoutes.MAIN_SCREEN) { inclusive = true }
+        launchSingleTop = true
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(navController: NavController, modifier: Modifier = Modifier) {
@@ -89,7 +98,7 @@ fun MainScreen(navController: NavController, modifier: Modifier = Modifier) {
                     onLihatTripClick = {navController.navigate(AppRoutes.ACTIVE_TRIP_SCREEN)}
                 )
                 MainNavigationItem.SCHEDULE -> ScheduleScreen()
-                MainNavigationItem.ACCOUNT -> AccountScreen()
+                MainNavigationItem.ACCOUNT -> AccountScreen(onLogout = { handleLogout(navController) })
             }
         }
     }

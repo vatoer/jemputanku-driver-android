@@ -18,16 +18,14 @@ import id.stargan.jemputankudriver.feature.login.LoginViewModel
 fun LoginScreen(
     onLoginSuccess: () -> Unit = {},
     onGoogleLogin: (() -> Unit)? = null,
-    onNavigateToSignup: () -> Unit = {},
-    isLoading: Boolean = false,
-    errorMessage: String? = null
+    onNavigateToSignup: () -> Unit = {}
 ) {
     val viewModel: LoginViewModel = viewModel()
     val isLoadingState by viewModel.isLoading.collectAsState()
     val errorState by viewModel.errorMessage.collectAsState()
     val loginSuccess by viewModel.loginSuccess.collectAsState()
 
-    var username by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
 
@@ -51,9 +49,9 @@ fun LoginScreen(
                 modifier = Modifier.padding(bottom = 24.dp)
             )
             OutlinedTextField(
-                value = username,
-                onValueChange = { username = it },
-                label = { Text("Username atau Email") },
+                value = email,
+                onValueChange = { email = it },
+                label = { Text("Email") },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next)
@@ -74,9 +72,9 @@ fun LoginScreen(
             )
             Spacer(modifier = Modifier.height(24.dp))
             Button(
-                onClick = { viewModel.loginWithEmail(username, password) },
+                onClick = { viewModel.login(email, password) },
                 modifier = Modifier.fillMaxWidth(),
-                enabled = !isLoadingState && username.isNotBlank() && password.isNotBlank()
+                enabled = !isLoadingState && email.isNotBlank() && password.isNotBlank()
             ) {
                 if (isLoadingState) CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
                 else Text("Login")
