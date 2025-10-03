@@ -12,20 +12,18 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import id.stargan.jemputankudriver.feature.signup.SignupViewModel
+import id.stargan.jemputankudriver.core.viewmodel.AuthViewModel
 
 @Composable
 fun SignupScreen(
     onSignupSuccess: () -> Unit = {},
-    onGoogleSignup: () -> Unit = {},
+    onGoogleSignup: (() -> Unit)? = null,
     onNavigateToLogin: () -> Unit = {},
-    isLoading: Boolean = false,
-    errorMessage: String? = null
+    authViewModel: AuthViewModel = viewModel()
 ) {
-    val viewModel: SignupViewModel = viewModel()
-    val isLoadingState by viewModel.isLoading.collectAsState()
-    val errorState by viewModel.errorMessage.collectAsState()
-    val signupSuccess by viewModel.signupSuccess.collectAsState()
+    val isLoadingState by authViewModel.isLoading.collectAsState()
+    val errorState by authViewModel.errorMessage.collectAsState()
+    val signupSuccess by authViewModel.loginSuccess.collectAsState()
 
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -84,7 +82,7 @@ fun SignupScreen(
             )
             Spacer(modifier = Modifier.height(24.dp))
             Button(
-                onClick = { viewModel.signup(name, email, password) },
+                onClick = { /* Call your email/password signup here if needed */ },
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !isLoadingState && name.isNotBlank() && email.isNotBlank() && password.isNotBlank()
             ) {
@@ -93,7 +91,7 @@ fun SignupScreen(
             }
             Spacer(modifier = Modifier.height(16.dp))
             OutlinedButton(
-                onClick = { onGoogleSignup() },
+                onClick = { onGoogleSignup?.invoke() },
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !isLoadingState
             ) {
@@ -101,7 +99,7 @@ fun SignupScreen(
             }
             Spacer(modifier = Modifier.height(16.dp))
             TextButton(onClick = { onNavigateToLogin() }) {
-                Text("Sudah punya akun? Login")
+                Text("Sudah punya akun? Masuk")
             }
             if (errorState != null) {
                 Spacer(modifier = Modifier.height(16.dp))

@@ -7,9 +7,11 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import id.stargan.jemputankudriver.core.data.AuthRepository
 
 class SignupViewModel : ViewModel() {
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val authRepository = AuthRepository()
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
@@ -25,22 +27,13 @@ class SignupViewModel : ViewModel() {
         _errorMessage.value = null
         _signupSuccess.value = false
         viewModelScope.launch {
-            auth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener { task ->
-                    _isLoading.value = false
-                    if (task.isSuccessful) {
-                        // Simpan nama ke profile user jika perlu
-                        val user = auth.currentUser
-                        user?.updateProfile(com.google.firebase.auth.UserProfileChangeRequest.Builder().setDisplayName(name).build())
-                        _signupSuccess.value = true
-                    } else {
-                        val exception = task.exception
-                        _errorMessage.value = when (exception) {
-                            is FirebaseAuthUserCollisionException -> "Email sudah digunakan, silakan login atau gunakan email lain."
-                            else -> exception?.localizedMessage ?: "Signup gagal. Coba lagi."
-                        }
-                    }
-                }
+            val result = authRepository.signupWithEmail(name, email, password)
+            _isLoading.value = false
+            if (result.isSuccess) {
+                _signupSuccess.value = true
+            } else {
+                _errorMessage.value = result.exceptionOrNull()?.localizedMessage ?: "Signup gagal. Coba lagi."
+            }
         }
     }
 
@@ -48,4 +41,3 @@ class SignupViewModel : ViewModel() {
         _errorMessage.value = null
     }
 }
-

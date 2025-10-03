@@ -12,18 +12,18 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import id.stargan.jemputankudriver.feature.login.LoginViewModel
+import id.stargan.jemputankudriver.core.viewmodel.AuthViewModel
 
 @Composable
 fun LoginScreen(
     onLoginSuccess: () -> Unit = {},
     onGoogleLogin: (() -> Unit)? = null,
-    onNavigateToSignup: () -> Unit = {}
+    onNavigateToSignup: () -> Unit = {},
+    authViewModel: AuthViewModel = viewModel()
 ) {
-    val viewModel: LoginViewModel = viewModel()
-    val isLoadingState by viewModel.isLoading.collectAsState()
-    val errorState by viewModel.errorMessage.collectAsState()
-    val loginSuccess by viewModel.loginSuccess.collectAsState()
+    val isLoadingState by authViewModel.isLoading.collectAsState()
+    val errorState by authViewModel.errorMessage.collectAsState()
+    val loginSuccess by authViewModel.loginSuccess.collectAsState()
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -72,7 +72,7 @@ fun LoginScreen(
             )
             Spacer(modifier = Modifier.height(24.dp))
             Button(
-                onClick = { viewModel.login(email, password) },
+                onClick = { /* Call your email/password login here if needed */ },
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !isLoadingState && email.isNotBlank() && password.isNotBlank()
             ) {
