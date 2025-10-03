@@ -1,7 +1,6 @@
 package id.stargan.jemputankudriver.feature.account
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,6 +10,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -24,6 +25,9 @@ fun AccountScreen(
     onLogout: () -> Unit
 ) {
     val viewModel: AccountViewModel = viewModel()
+    val displayName by viewModel.displayName.collectAsState(initial = null)
+    val email by viewModel.email.collectAsState(initial = null)
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -32,8 +36,18 @@ fun AccountScreen(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Konten Halaman Akun",
-            style = MaterialTheme.typography.headlineMedium
+            text = "Akun Saya",
+            style = MaterialTheme.typography.headlineSmall
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = "Nama: ${displayName ?: "-"}",
+            style = MaterialTheme.typography.bodyLarge
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = "Email: ${email ?: "-"}",
+            style = MaterialTheme.typography.bodyLarge
         )
         Spacer(modifier = Modifier.height(24.dp))
         Button(onClick = {

@@ -1,6 +1,5 @@
 package id.stargan.jemputankudriver.driver.navigation
 
-import android.app.Application
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -20,13 +19,12 @@ import id.stargan.jemputankudriver.feature.login.LoginScreen
 import id.stargan.jemputankudriver.feature.signup.SignupScreen
 import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.launch
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.api.ApiException
 import id.stargan.jemputankudriver.core.viewmodel.AuthViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.credentials.CredentialManager
+import androidx.credentials.GetCredentialRequest
+import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 
 // Definisikan rute (alamat unik) untuk setiap layar
 object AppRoutes {
@@ -39,7 +37,7 @@ object AppRoutes {
 
 @Composable
 fun AppNavigation() {
-    val context = LocalContext.current.applicationContext as Application
+    val context = LocalContext.current // Activity context for Credential Manager
     val navController = rememberNavController()
     val onboardingShownFlow = OnboardingPreferences.isOnboardingShown(context)
     val isOnboardingShown by onboardingShownFlow.collectAsState(initial = false)
@@ -47,36 +45,44 @@ fun AppNavigation() {
     val scope = rememberCoroutineScope()
     val authViewModel: AuthViewModel = viewModel()
 
-    // Google Sign-In launcher
-    val googleSignInLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-        try {
-            val account = task.getResult(ApiException::class.java)
-            val idToken = account.idToken
-            if (idToken != null) {
-                authViewModel.signInWithGoogle(idToken)
-            } else {
-                authViewModel.resetState()
-            }
-        } catch (e: Exception) {
-            authViewModel.resetState()
-        }
+    // Prepare Credential Manager + Google ID Option
+    val credentialManager = remember { CredentialManager.create(context) }
+    val googleIdOption = remember {
+        GetGoogleIdOption.Builder()
+            .setServerClientId(
+                context.getString(
+                    context.resources.getIdentifier(
+                        "default_web_client_id",
+                        "string",
+                        context.packageName
+                    )
+                )
+            )
+            // false = tampilkan semua akun Google di device (sign up/sign in)
+            .setFilterByAuthorizedAccounts(false)
+            .build()
     }
 
-    // GoogleSignInClient config
-    val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-        .requestIdToken(context.getString(
-            context.resources.getIdentifier(
-                "default_web_client_id",
-                "string",
-                context.packageName
-            )
-        ))
-        .requestEmail()
-        .build()
-    val googleSignInClient = GoogleSignIn.getClient(context, gso)
+    fun launchGoogleSignIn() {
+        scope.launch {
+            try {
+                val request = GetCredentialRequest.Builder()
+                    .addCredentialOption(googleIdOption)
+                    .build()
+                val result = credentialManager.getCredential(
+                    context = context,
+                    request = request
+                )
+                val credential = result.credential
+                val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
+                val idToken = googleIdTokenCredential.idToken
+                authViewModel.signInWithGoogle(idToken)
+            } catch (e: Exception) {
+                // Optional: map specific Credential exceptions for better UX
+                authViewModel.resetState()
+            }
+        }
+    }
 
     LaunchedEffect(isOnboardingShown) {
         startDestination = if (isOnboardingShown) AppRoutes.LOGIN_SCREEN else AppRoutes.ONBOARDING_SCREEN
@@ -120,8 +126,7 @@ fun AppNavigation() {
                         authViewModel.resetState()
                     },
                     onGoogleLogin = {
-                        val signInIntent = googleSignInClient.signInIntent
-                        googleSignInLauncher.launch(signInIntent)
+                        launchGoogleSignIn()
                     },
                     onNavigateToSignup = {
                         navController.navigate(AppRoutes.SIGNUP_SCREEN) {
@@ -153,8 +158,7 @@ fun AppNavigation() {
                         authViewModel.resetState()
                     },
                     onGoogleSignup = {
-                        val signInIntent = googleSignInClient.signInIntent
-                        googleSignInLauncher.launch(signInIntent)
+                        launchGoogleSignIn()
                     },
                     onNavigateToLogin = {
                         navController.popBackStack(AppRoutes.LOGIN_SCREEN, inclusive = false)
